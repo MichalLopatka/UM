@@ -1,0 +1,4 @@
+deslib
+numpy
+scikit-learn
+stream-learn

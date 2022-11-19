@@ -1,0 +1,12 @@
+{
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "terminal.integrated.profiles.windows": {
+        "bash": {
+            "path": "bash"
+        },
+    },
+    "terminal.integrated.autoReplies": {
+    
+    },
+    "python.terminal.activateEnvInCurrentTerminal": true,
+}
