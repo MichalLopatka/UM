@@ -8,7 +8,6 @@ from sklearn.ensemble import RandomForestClassifier
 from strlearn.metrics import recall, precision, specificity, f1_score, geometric_mean_score_1
 
 
-
 datasets = glob.glob("datasets/*.dat")
 
 metrics = {
@@ -37,15 +36,15 @@ for data_id, dataset in enumerate(datasets):
     y = np.array(y)
     # print(y)
     # print(X)
-    pool_classifiers = RandomForestClassifier(n_estimators=15)
-    pool_classifiers.fit(X, y)
-    clfs = {
-        'KNORAU': KNORAU(pool_classifiers),
-        'KNORAE': KNORAE(pool_classifiers)
-    }
+    
     for fold_id, (train, test) in enumerate(rskf.split(X, y)):
+        pool_classifiers = RandomForestClassifier(n_estimators=15)
+        pool_classifiers.fit(X[train], y[train])
+        clfs = {
+            'KNORAU': KNORAU(pool_classifiers),
+            'KNORAE': KNORAE(pool_classifiers)
+        }
         for clf_id, clf in enumerate(clfs):
-
             clfs[clf].fit(X[train], y[train])
             y_pred = clfs[clf].predict(X[test])
 
