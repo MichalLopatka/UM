@@ -5,17 +5,15 @@ from sklearn.metrics import DistanceMetric
 
 
 class KNORA_U(BaseEstimator, ClassifierMixin):
-
-    # Initializer
-    def __init__(self, pool_classifiers=None, k=7, random_state=66):
+    def __init__(self, pool_classifiers=None, k=7, random_state=66, ir=1):
 
         self.pool_classifiers = pool_classifiers
         self.k = k
         self.random_state = random_state
-
+        self.ir = ir
         np.random.seed(self.random_state)
 
-    # Fitting the model to the data
+
     def fit(self, X, y):
         X, y = check_X_y(X, y)
         self.classes_ = np.unique(y)
@@ -23,7 +21,7 @@ class KNORA_U(BaseEstimator, ClassifierMixin):
 
         return self
 
-    # finding a region of competence of smaple (xquery) by selecting KNN of sample in the validation set
+
     def region_of_competence(self, xquery, vali_set):
         region = []
 
@@ -37,7 +35,7 @@ class KNORA_U(BaseEstimator, ClassifierMixin):
 
         return region
 
-    # selection of all classifires that are able to correctly recognise at least one sample it the region of competence
+
     def selection(self, clf, region):
         for i in region:
             pred = clf.predict(i[0][0].reshape(1, -1))
@@ -49,25 +47,19 @@ class KNORA_U(BaseEstimator, ClassifierMixin):
         check_is_fitted(self)
         samples = check_array(samples)
 
-        y_pred = []
+        y_pred = np.zeros(samples.shape[0])
 
-        for query in samples:
+        for i, query in enumerate(samples):
             region = self.region_of_competence(query, zip(self.X_, self.y_))
-            ensemble = []
 
-            for clf in self.pool_classifiers:
-                if self.selection(clf, region):
-                    ensemble.append(clf)
+            ensemble = [x for x in self.pool_classifiers if self.selection(x, region)]
 
-            # majority voting
             forecast = 0
             for clf in ensemble:
                 value = clf.predict(query.reshape(1, -1))
                 forecast += value
 
-            if forecast <= (len(ensemble) / 2):
-                y_pred.append(0)
-            else:
-                y_pred.append(1)
+            if forecast > (1/(1+self.ir))*len(ensemble):
+                y_pred[i] = 1
 
-        return np.array(y_pred)
+        return y_pred

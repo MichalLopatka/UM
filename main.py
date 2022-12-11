@@ -11,8 +11,8 @@ from knoranew import KNORA_U
 datasets = glob.glob("datasets/*.dat")
 
 metrics = {
-    "recall": recall,
     'precision': precision,
+    "recall": recall,
     'specificity': specificity,
     'f1': f1_score,
     'g-mean': geometric_mean_score_1,
@@ -34,7 +34,8 @@ for data_id, dataset in enumerate(datasets):
     y = np.char.strip(y)
     y = [cls_dict[el] for el in y]
     y = np.array(y)
-    IR = max(np.count_nonzero(y == 0)/np.count_nonzero(y == 1), (np.count_nonzero(y == 1)/np.count_nonzero(y == 0)))
+    ir = max(np.count_nonzero(y == 0)/np.count_nonzero(y == 1), (np.count_nonzero(y == 1)/np.count_nonzero(y == 0)))
+    # print(ir)
     # print(y)
     # print(X)
     
@@ -44,7 +45,7 @@ for data_id, dataset in enumerate(datasets):
         clfs = {
             'KNORAU': KNORAU(pool_classifiers),
             'KNORAE': KNORAE(pool_classifiers),
-            'KNORA_U': KNORA_U(pool_classifiers),
+            'KNORA_U': KNORA_U(pool_classifiers, ir=ir),
         }
         for clf_id, clf in enumerate(clfs):
             clfs[clf].fit(X[train], y[train])
