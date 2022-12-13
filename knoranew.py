@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import DistanceMetric
-
+from math import sqrt
 
 class KNORA_U(BaseEstimator, ClassifierMixin):
     def __init__(self, pool_classifiers=None, k=7, random_state=66, ir=1):
@@ -59,7 +59,7 @@ class KNORA_U(BaseEstimator, ClassifierMixin):
                 value = clf.predict(query.reshape(1, -1))
                 forecast += value
 
-            if forecast > (1/(1+self.ir))*len(ensemble):
+            if forecast > (1/(1+sqrt(self.ir)))*len(ensemble):
                 y_pred[i] = 1
 
         return y_pred

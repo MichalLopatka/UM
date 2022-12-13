@@ -41,11 +41,11 @@ for data_id, dataset in enumerate(datasets):
     # print(X)
     
     for fold_id, (train, test) in enumerate(rskf.split(X, y)):
-        pool_classifiers = RandomForestClassifier(n_estimators=15)
+        pool_classifiers = RandomForestClassifier(n_estimators=15, random_state=1234)
         pool_classifiers.fit(X[train], y[train])
         clfs = {
-            'KNORAU': KNORAU(pool_classifiers),
-            'KNORAE': KNORAE(pool_classifiers),
+            'KNORAU': KNORAU(pool_classifiers, random_state=1234),
+            'KNORAE': KNORAE(pool_classifiers, random_state=1234),
             'KNORA_U': KNORA_U(pool_classifiers, ir=ir),
         }
         for clf_id, clf in enumerate(clfs):
